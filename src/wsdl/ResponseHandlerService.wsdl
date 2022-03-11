@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions targetNamespace="http://soa.comptel.com/2011/02/instantlink"
+	name="ResponseHandlerService"
+	xmlns="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:tns="http://soa.comptel.com/2011/02/instantlink"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/">
+
+	<types>
+		<xsd:schema>
+			<xsd:import namespace="http://soa.comptel.com/2011/02/instantlink"	schemaLocation="ResponseHandlerService.xsd" />
+		</xsd:schema>
+	</types>
+
+	<message name="handleResponse">
+		<part name="parameters" element="tns:Response" />
+	</message>
+	<message name="handleResponseAcknowledgement">
+		<part name="parameters" element="tns:ResponseAcknowledgement" />
+	</message>
+	<message name="handleNotification">
+		<part name="parameters" element="tns:Notification" />
+	</message>	
+   
+	<message name="handleNotificationResponse">
+            <!--
+                Uncomment this block if you have trouble implementing response handling service using this wsdl
+                NOTE remember to uncomment related block from InstantLinkWebServices.xsd as well
+     		<part name="parameters" element="tns:HandleNotificationResponse" />                
+                -->
+	</message>
+
+
+	<portType name="ResponseHandlerWithAck">
+		<documentation>ResponseHandler service accepts response and notification messages. This is needed when asynchronous requests are sent to InstantLink SOA Web Services. The responses and notifications of such requests are sent to this service.</documentation>
+
+		<operation name="handleResponse">
+			<documentation>This operation handles the given response message.</documentation>
+			<input message="tns:handleResponse" />
+                        <output message="tns:handleResponseAcknowledgement" />
+		</operation>
+		
+		<operation name="handleNotification">
+			<documentation>This operation handles the given notification message. The response this operation returns (handleNotificationResponse) is an empty message.</documentation>
+			<input message="tns:handleNotification" />
+                        <output message="tns:handleNotificationResponse"/>
+		</operation>
+	</portType>
+        
+        <portType name="ResponseHandler">
+		<documentation>ResponseHandler service accepts response and notification messages. This is needed when asynchronous requests are sent to InstantLink SOA Web Services. The responses and notifications of such requests are sent to this service.</documentation>
+
+		<operation name="handleResponse">
+			<documentation>This operation handles the given response message.</documentation>
+			<input message="tns:handleResponse" />         
+		</operation>
+		
+		<operation name="handleNotification">
+			<documentation>This operation handles the given notification message. The response this operation returns (handleNotificationResponse) is an empty message.</documentation>
+			<input message="tns:handleNotification" />
+                        <output message="tns:handleNotificationResponse"/>                        
+		</operation>
+	</portType>
+
+	<binding name="ResponseHandlerWithAckPortBinding" type="tns:ResponseHandlerWithAck">
+		<soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+		<operation name="handleResponse">
+			<soap12:operation soapAction="handleResponse" />
+			<input>
+				<soap12:body use="literal" />
+			</input>
+			<output>
+				<soap12:body use="literal" />
+			</output>
+		</operation>
+		<operation name="handleNotification">
+			<soap12:operation soapAction="handleNotification" />
+			<input>
+				<soap12:body use="literal" />
+			</input>
+                        <output>
+				<soap12:body use="literal" />
+			</output>
+		</operation>
+	</binding>
+        
+        <binding name="ResponseHandlerPortBinding" type="tns:ResponseHandler">
+		<soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+		<operation name="handleResponse">
+			<soap12:operation soapAction="handleResponse" />
+			<input>
+				<soap12:body use="literal" />
+			</input>
+		</operation>
+		<operation name="handleNotification">
+			<soap12:operation soapAction="handleNotification" />
+			<input>
+				<soap12:body use="literal" />
+			</input>
+            <output>
+				<soap12:body use="literal" />
+			</output>
+		</operation>
+	</binding>
+
+	<service name="ResponseHandlerService">
+		<documentation>ResponseHandler service accepts response and notification messages. This is needed when asynchronous requests are sent to InstantLink SOA Web Services. The responses and notifications of such requests are sent to this service.</documentation>
+		<port name="ResponseHandlerPort" binding="tns:ResponseHandlerPortBinding">
+			<documentation>A SOAP 1.2 port</documentation>
+			<soap12:address location="http://127.0.0.1:8080/RT.FFASYNCAPI.OMSOrderNotificationWebService/ResponseHandlerService" />
+		</port>
+		<port name="ResponseHandlerWithAckPort" binding="tns:ResponseHandlerWithAckPortBinding">
+			<documentation>A SOAP 1.2 port</documentation>
+			<soap12:address location="http://127.0.0.1:8080/RT.FFASYNCAPI.OMSOrderNotificationWebService/ResponseHandlerWithAckPort" />
+		</port>
+	</service>
+</definitions>
+

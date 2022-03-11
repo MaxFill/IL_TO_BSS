@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://oms.rt.ru/" targetNamespace="http://oms.rt.ru/" elementFormDefault="unqualified" version="1.09">
+	<xs:include schemaLocation="RTAPI_v01.xsd"/>
+	<xs:include schemaLocation="attributes.xsd" />
+	<xs:element name="orderStatusNotification" type="tns:OrderStatusNotification">
+		<xs:annotation>
+			<xs:documentation>Нотификация по статусу/этапу обработки заказа</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="orderStatusResponse" type="tns:NotificationResponse"/>
+	<xs:complexType name="OrderStatusNotification">
+		<xs:sequence>
+			<xs:element name="originator" type="xs:string" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Система - источник результатов обработки запроса</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="receiver" type="xs:string" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Система - адресат результатов обработки запроса</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="orderResult" type="tns:OrderResult" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Результат обработки заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="1" maxOccurs="1" name="requestId" type="xs:string"/> <!-- Идентификатор транзакции на вызывающей стороне -->
+			<xs:element name="order" type="tns:OrderStatus" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OrderStatus">
+		<xs:all>
+			<xs:element name="orderId" type="xs:string" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Идентификатор объекта (заказа) во внешней системе, являющегося «родительским» по отношению к исходному запросу</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="orderOMSId" type="xs:string" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Идентификатор запроса на изменение заказа для корреляции асинхронного ответа с результатами проверки</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="orderState" type="xs:string" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Статус заказа. Пример справочника см. tns:OrderState</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="orderStartDate" type="xs:dateTime" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Фактическая дата начала обработки заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="orderExpectedCompletionDate" type="xs:dateTime" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Ожидаемая дата завершения обработки заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+            <xs:element name="orderCompletionDate" type="xs:dateTime" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Фактическая дата завершения обработки заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="orderNotifications" type="tns:OrderNotifications" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Оповещения по статусу заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" maxOccurs="1" name="orderComments" type="tns:Comments"/> <!-- Комментарии к заказу -->
+			<xs:element minOccurs="0" maxOccurs="1" name="orderParties" type="tns:OrderParties"/> <!-- Список объектов заказа -->
+			<xs:element name="orderItems" type="tns:NotificationOrderItems" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Список компонентов заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="orderAttributes" type="tns:Attributes" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Атрибуты заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="NotificationOrderItems">
+		<xs:sequence>
+			<xs:element name="orderItem" type="tns:NotificationOrderItem" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="NotificationOrderItem">
+		<xs:all>
+			<xs:element name="orderItemId" type="xs:string" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Идентификатор компонента (услуги) в системе-источнике заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="orderItemInstanceId" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Идентификатор, генерируемый системами уровня OSS для регистрации компонента (CFS_ID, RFS_ID)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="orderItemAction" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Требуемое действие над компонентом в рамках выполнения заказа. Пример справочника см. tns:OrderItemAction</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="orderItemState" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Статус выполнения действия над компонентом заказа. Пример справочника см. tns:OrderItemState</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" maxOccurs="1" name="orderItemParties" type="tns:OrderParties">
+				<xs:annotation>
+					<xs:documentation>Список объектов компонента заказа - имеют преимущество над (переопределяют) объектами заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="orderItemAttributes" type="tns:InheritableAttributes" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Атрибуты компонента заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="orderItemAppointmentId" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Идентификатор наряда WFM для визита к клиенту, в рамках которого выполняются работы по услуге</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="orderItemResult" type="tns:OrderItemResult" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Результат выполнения действия над компонентом заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="OrderItemBillingInfo" mixed="true">
+		<xs:sequence>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/> <!-- Информация для биллинга. Допускается использование сложных типов (xml со своей схемой) -->	
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

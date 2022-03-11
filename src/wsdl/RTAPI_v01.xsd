@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://oms.rt.ru/"
+           elementFormDefault="unqualified" targetNamespace="http://oms.rt.ru/" version="1.18">
+    <xs:simpleType name="OrderMode"><xs:annotation><xs:documentation>Режим взаимодействия с системой-источником запроса</xs:documentation></xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ASYNC"><xs:annotation><xs:documentation>Асинхронный режим обработки заказа</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="SYNC"><xs:annotation><xs:documentation>Синхронный режим обработки заказа</xs:documentation></xs:annotation></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="OrderCategory"><xs:annotation><xs:documentation>Категория запроса по маркетинговому сегменту</xs:documentation></xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="B2C"/>
+            <xs:enumeration value="KKFU"/>
+            <xs:enumeration value="KKMU"/>
+            <xs:enumeration value="KKRU"/>
+            <xs:enumeration value="B2G"/>
+            <xs:enumeration value="B2O"/>
+            <xs:enumeration value="B2B"><xs:annotation><xs:documentation>Корпоративный сегмент без детализации</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="EXTENSION"><xs:annotation><xs:documentation>Технологический заказ (развитие)</xs:documentation></xs:annotation></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="OrderState"><xs:annotation><xs:documentation>Статус выполнения запроса</xs:documentation></xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="RECEIVED"><xs:annotation><xs:documentation>Заказ получен, обработка не начата</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="ACKNOWLEDGED"><xs:annotation><xs:documentation>Заказ получен, форматная проверка заказа проведена</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="REJECTED"><xs:annotation><xs:documentation>Заказ отвергнут по причине ошибок валидации</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="INPROGRESS"><xs:annotation><xs:documentation>Заказ корректен и находится на выполнении</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="AMENDING"><xs:annotation><xs:documentation>Получен запрос на изменение заказа</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="CANCELLING"><xs:annotation><xs:documentation>Получен запрос на отмену заказа</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="CANCELLED"><xs:annotation><xs:documentation>Заказ отменен</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="COMPLETED"><xs:annotation><xs:documentation>Выполнение заказа успешно завершено, все компоненты заказа обработаны успешно</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="FAILED"><xs:annotation><xs:documentation>Выполнение заказа завершено неуспешно</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="PARTIAL"><xs:annotation><xs:documentation>Выполнение заказа завершено с успешной обработкой части заказа</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="POSTPONED"><xs:annotation><xs:documentation>Выполнение заказа приостановлено до получения сигнала о продолжении обработки</xs:documentation></xs:annotation></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="AttributeStatus"><xs:annotation><xs:documentation>Статус атрибута</xs:documentation></xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="AC"><xs:annotation><xs:documentation>Активное значение атрибута</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="CE"><xs:annotation><xs:documentation>Предыдущее (неактивное) значение атрибута</xs:documentation></xs:annotation></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="Attributes"><xs:annotation><xs:documentation>Список дополнительных атрибутов</xs:documentation></xs:annotation>
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="attribute" type="tns:Attribute"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="Attribute" mixed="true"><xs:annotation><xs:documentation>Атрибут</xs:documentation></xs:annotation>
+        <xs:sequence>
+            <xs:any minOccurs="0" maxOccurs="1" processContents="lax"><xs:annotation><xs:documentation>Значение атрибута. Допускается использование сложных типов (xml со своей схемой, см. файл attributes.xsd)</xs:documentation></xs:annotation></xs:any>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"><xs:annotation><xs:documentation>Имя атрибута</xs:documentation></xs:annotation></xs:attribute>
+        <xs:attribute name="status" type="tns:AttributeStatus" default="AC"><xs:annotation><xs:documentation>Статус атрибута</xs:documentation></xs:annotation></xs:attribute>
+        <xs:attribute name="isChanged" type="xs:boolean" default="false"><xs:annotation><xs:documentation>Признак изменения атрибута</xs:documentation></xs:annotation></xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="OIReferences">
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="reference" type="tns:OIReference"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="OIReference" mixed="true"><xs:annotation><xs:documentation>Идентификатор (например, CFS_ID) связанного компонента</xs:documentation></xs:annotation>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="name" type="xs:string" use="required"><xs:annotation><xs:documentation>Системное название именованной связи. По умолчанию используется название спецификации сервиса</xs:documentation></xs:annotation></xs:attribute>
+          <xs:attribute name="specId" type="xs:string" use="required"><xs:annotation><xs:documentation>Идентификатор спецификации.</xs:documentation></xs:annotation></xs:attribute>
+		  <xs:attribute name="status" type="tns:AttributeStatus" default="AC"><xs:annotation><xs:documentation>Статус связи</xs:documentation></xs:annotation></xs:attribute>
+          <xs:attribute name="isChanged" type="xs:boolean" default="false"><xs:annotation><xs:documentation>Признак изменения связи при изменении услуги как часть заказа</xs:documentation></xs:annotation></xs:attribute>
+          <xs:attribute name="isUpdated" type="xs:boolean" default="false"><xs:annotation><xs:documentation>Признак обновления значения связи в рамках одного коммерческого заказа (при переходе заказа от одного этапа к другому, либо между повторными вызовами этапа)</xs:documentation></xs:annotation></xs:attribute>
+       </xs:extension>
+     </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="Comments"><xs:annotation><xs:documentation>Список комментариев к запросу</xs:documentation></xs:annotation>
+        <xs:sequence>
+            <xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"><xs:annotation><xs:documentation>Комментарии к заказу. Допускается использование сложных типов (xml со своей схемой), либо элементы типа tns:Comment</xs:documentation></xs:annotation></xs:any>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="Comment"><xs:annotation><xs:documentation>Комментарий</xs:documentation></xs:annotation>
+        <xs:all>
+            <xs:element minOccurs="0" maxOccurs="1" name="date" type="xs:dateTime"><xs:annotation><xs:documentation>Дата комментария</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="commenter" type="xs:string"><xs:annotation><xs:documentation>Комментатор</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="1" maxOccurs="1" name="text" type="xs:string"><xs:annotation><xs:documentation>Текст комментария</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="type" type="xs:string"><xs:annotation><xs:documentation>Тип комментария</xs:documentation></xs:annotation></xs:element>
+        </xs:all>
+    </xs:complexType>
+    <xs:simpleType name="LocationCategory"><xs:annotation><xs:documentation>Категория, определяющая набор атрибутов, описывающих адрес/местоположение</xs:documentation></xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="STRICT"><xs:annotation><xs:documentation>Точный адрес</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="GEO"><xs:annotation><xs:documentation>Точные координаты адреса с указанием адресного элемента ориентира</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="LANDMARK"><xs:annotation><xs:documentation>Адресный элемент ориентира с указанием навигации до точного адреса</xs:documentation></xs:annotation></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="LocationRegister"><xs:annotation><xs:documentation>Справочник справочников идентификаторов адресов</xs:documentation></xs:annotation>
+		<xs:restriction base="xs:string">
+            <xs:enumeration value="HERMES"><xs:annotation><xs:documentation>Внутренний справочник СУС Гермес</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="KLADR"><xs:annotation><xs:documentation>КЛАДР</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="GID"><xs:annotation><xs:documentation>ОРПОН</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="NW_BIS_AIR"><xs:annotation><xs:documentation>Справочник BIS в МРФ Северо-Запад</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="Vlg"><xs:annotation><xs:documentation>Справочник в МРФ Волга</xs:documentation></xs:annotation></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="Location"><xs:annotation><xs:documentation>Местоположение (адресная характеристика)</xs:documentation></xs:annotation>
+        <xs:all>
+            <xs:element minOccurs="0" maxOccurs="1" name="locationId" type="xs:string"><xs:annotation><xs:documentation>Идентификатор адресного элемента</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="1" maxOccurs="1" name="locationCategory" type="tns:LocationCategory"><xs:annotation><xs:documentation>Категория адресного элемента</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="1" maxOccurs="1" name="locationRegister" type="xs:string"><xs:annotation><xs:documentation>Справочник идентификаторов адресного элемента. Пример значений см. tns:LocationRegister</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="locationAttributes" type="tns:Attributes"><xs:annotation><xs:documentation>Атрибуты адресного элемента (улица, дом, строение, этаж, квартира и т.п.)</xs:documentation></xs:annotation></xs:element>
+        </xs:all>
+    </xs:complexType>
+    <xs:complexType name="OrderParties"><xs:annotation><xs:documentation>Список связанных объектов, характеризующих запрос</xs:documentation></xs:annotation>
+        <xs:sequence>
+            <xs:choice maxOccurs="unbounded" minOccurs="0">
+                <xs:element name="orderParty" type="tns:Party"><xs:annotation><xs:documentation>Объекты, связанные с заказом.</xs:documentation></xs:annotation></xs:element>
+                <xs:element name="orderAttachment" type="tns:Attachment"><xs:annotation><xs:documentation>Вложения, связанные с заказом.</xs:documentation></xs:annotation></xs:element>
+            </xs:choice>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="PartyRole"><xs:annotation><xs:documentation>Категория объекта, переданного с запросом</xs:documentation></xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CLIENT"><xs:annotation><xs:documentation>Клиент</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="INITIATOR"><xs:annotation><xs:documentation>Оператор системы-источника запроса, инициатор запроса</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="SALES"><xs:annotation><xs:documentation>Менеджер отдела продаж, инициатор продажи</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="ACCOUNT"><xs:annotation><xs:documentation>Счет клиента</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="CONTACT"><xs:annotation><xs:documentation>Контактная информация</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="WORKER"><xs:annotation><xs:documentation>Исполнитель работ</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="KZ"><xs:annotation><xs:documentation>Клиентская заявка в СУС</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="KP"><xs:annotation><xs:documentation>Клиентский проект в СУС</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="SZ"><xs:annotation><xs:documentation>Строительная заявка в СУС</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="IP"><xs:annotation><xs:documentation>Инвестиционный проект в R12</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="SOLUTION"><xs:annotation><xs:documentation>Техническое решение в СУС</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="RESERVATION"><xs:annotation><xs:documentation>Бронь линейных данных в СЛТУ под техническое решение</xs:documentation></xs:annotation></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="Party"><xs:annotation><xs:documentation>Связанный объект, дополняющий запрос</xs:documentation></xs:annotation>
+        <xs:all>
+            <xs:element minOccurs="1" maxOccurs="1" name="partyRole" type="xs:string"><xs:annotation><xs:documentation>Справочник типов ролей. Пример значений см. tns:PartyRole</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="partyId" type="xs:string"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="partyName" type="xs:string"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="partyAttributes" type="tns:Attributes"/>
+        </xs:all>
+    </xs:complexType>
+    <xs:complexType name="Attachment"><xs:annotation><xs:documentation>Объект вложений, дополняющий запрос</xs:documentation></xs:annotation>
+        <xs:all>
+            <xs:element minOccurs="0" maxOccurs="1" name="attachmentRegister" default="FTP" type="xs:string"><xs:annotation><xs:documentation>Тип файлового хранилища. На 2020-06-16 допустимы значения: EHD, FTP</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="1" maxOccurs="1" name="attachmentType" type="xs:integer"><xs:annotation><xs:documentation>Тип вложения из справочника мастер-системы управления вложением</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="1" maxOccurs="1" name="creationDate" type="xs:dateTime"><xs:annotation><xs:documentation>Дата загрузки вложения в систему управления вложениями</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="1" maxOccurs="1" name="author" type="xs:string"><xs:annotation><xs:documentation>Автор вложения</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="1" maxOccurs="1" name="URL" type="xs:string"><xs:annotation><xs:documentation>Ссылка на файл на SFTP-сервере (если attachmnentRegister=FTP) либо идентификатор файла в ЕХД (если attachmnentRegister=EHD)</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="1" maxOccurs="1" name="header" type="xs:string"><xs:annotation><xs:documentation>Заголовок вложения</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="1" maxOccurs="1" name="fileName" type="xs:string"><xs:annotation><xs:documentation>Наименование файла</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="1" maxOccurs="1" name="fileExtension" type="xs:string"><xs:annotation><xs:documentation>Расширение файла</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="attachmentAttributes" type="tns:Attributes"/>
+        </xs:all>
+    </xs:complexType>
+    <xs:complexType name="Result">
+        <xs:all>
+            <xs:element minOccurs="1" maxOccurs="1" name="resultCode" type="xs:string"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="resultText" type="xs:string"/>
+        </xs:all>
+    </xs:complexType>
+    <xs:complexType name="NotificationResponse">
+        <xs:sequence>
+            <xs:element minOccurs="1" maxOccurs="1" name="originator" type="xs:string"><xs:annotation><xs:documentation>Система - источник результатов обработки запроса</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="1" maxOccurs="1" name="receiver" type="xs:string"><xs:annotation><xs:documentation>Система - адресат результатов обработки запроса</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="1" maxOccurs="1" name="result" type="tns:Result"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="OrderNotifications"><xs:annotation><xs:documentation>Список оповещений по выполнению запроса</xs:documentation></xs:annotation>
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="orderNotification" type="tns:OrderNotification"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="OrderNotification"><xs:annotation><xs:documentation>Оповещение по выполнению запроса</xs:documentation></xs:annotation>
+        <xs:all>
+            <xs:element minOccurs="0" maxOccurs="1" name="notificationTimestamp" type="xs:dateTime"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="notificationStatus" type="xs:string"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="notificationText" type="xs:string"/>
+            <xs:element minOccurs="0" maxOccurs="1" name="notificationAttributes" type="tns:Attributes"/>
+        </xs:all>
+    </xs:complexType>
+    <xs:complexType name="OrderResult"><xs:annotation><xs:documentation>Результат выполнения запроса</xs:documentation></xs:annotation>
+        <xs:all>
+            <xs:element minOccurs="1" maxOccurs="1" name="orderResultCode" type="xs:string"><xs:annotation><xs:documentation>Код результата обработки заказа</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="orderResultText" type="xs:string"><xs:annotation><xs:documentation>Текстовое описание результата обработки заказа</xs:documentation></xs:annotation></xs:element>
+        </xs:all>
+    </xs:complexType>
+    <xs:simpleType name="OrderItemAction"><xs:annotation><xs:documentation>Действие над компонентом заказа</xs:documentation></xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CREATE"><xs:annotation><xs:documentation>Создание</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="CHANGE"><xs:annotation><xs:documentation>Изменение</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="CEASE"><xs:annotation><xs:documentation>Отключение</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="QUERY"><xs:annotation><xs:documentation>Запрос статуса</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="SUSPEND"><xs:annotation><xs:documentation>Добровольная блокировка</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="RESUME"><xs:annotation><xs:documentation>Добровольная разблокировка</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="INFO"><xs:annotation><xs:documentation>Действие не производится - компонент представлен для информационных целей</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="REMOVE"><xs:annotation><xs:documentation>Исключение компонента из заказа для операции изменения заказа</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="MOVE"><xs:annotation><xs:documentation>Перенос зависимого компонента на другой родительский компонент (при переезде, смене технологии и т.п.)</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="FINBLOCK"><xs:annotation><xs:documentation>Установка финансовой блокировки</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="FINUNBLOCK"><xs:annotation><xs:documentation>Снятие финансовой блокировки</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="ADMBLOCK"><xs:annotation><xs:documentation>Установка административной блокировки</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="ADMUNBLOCK"><xs:annotation><xs:documentation>Снятие административной блокировки</xs:documentation></xs:annotation></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="OrderItemCategory"><xs:annotation><xs:documentation>Категория компонента заказа</xs:documentation></xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Product"><xs:annotation><xs:documentation>Комплексная услуга, предоставляемая клиенту</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="CFS"><xs:annotation><xs:documentation>Атомарная услуга, предоставляемая клиенту</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="CRFS"><xs:annotation><xs:documentation>Композитная ресурсная услуга</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="RFS"><xs:annotation><xs:documentation>Ресурсная услуга</xs:documentation></xs:annotation></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="OrderItemState"><xs:annotation><xs:documentation>Статус выполнения действия над компонентом в рамках выполнения заказа</xs:documentation></xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="INPROGRESS"><xs:annotation><xs:documentation>Компонент в процессе обработки</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="PENDING"><xs:annotation><xs:documentation>Компонент в ожидании внешнего события</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="COMPLETED"><xs:annotation><xs:documentation>Компонент успешно обработан</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="CANCELLED"><xs:annotation><xs:documentation>Компонент отменен</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="ONHOLD"><xs:annotation><xs:documentation>Компонент остановлен из-за ошибки и находится в ожидании решения проблемы</xs:documentation></xs:annotation></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="InheritableAttributes">
+        <xs:annotation>
+            <xs:documentation>Список атрибутов, имеющих признак наследования по иерархии компонентов заказа</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" name="attribute" type="tns:InheritableAttribute"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="AttributeRestriction"><xs:annotation><xs:documentation>Ограничение имени атрибута</xs:documentation></xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="model"><xs:annotation><xs:documentation>Атрибут определяется сервисной моделью</xs:documentation></xs:annotation></xs:enumeration>
+            <xs:enumeration value="dynamic"><xs:annotation><xs:documentation>Атрибут не определяется сервисной моделью</xs:documentation></xs:annotation></xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="InheritableAttribute" mixed="true">
+        <xs:sequence>
+            <xs:any minOccurs="0" maxOccurs="1" processContents="lax"><xs:annotation><xs:documentation>Значение атрибута. Допускается использование сложных типов (xml со своей схемой)</xs:documentation></xs:annotation>
+            </xs:any>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"><xs:annotation><xs:documentation>Имя атрибута</xs:documentation></xs:annotation></xs:attribute>
+        <xs:attribute name="restriction" type="tns:AttributeRestriction" default="model"><xs:annotation><xs:documentation>Ограничение имени атрибута</xs:documentation></xs:annotation></xs:attribute>
+        <xs:attribute name="status" type="tns:AttributeStatus" default="AC"><xs:annotation><xs:documentation>Статус атрибута</xs:documentation></xs:annotation></xs:attribute>
+        <xs:attribute name="isChanged" type="xs:boolean" default="false"><xs:annotation><xs:documentation>Признак изменения атрибута при изменении услуги как часть заказа</xs:documentation></xs:annotation></xs:attribute>
+        <xs:attribute name="isUpdated" type="xs:boolean" default="false"><xs:annotation><xs:documentation>Признак обновления значения атрибута в рамках одного коммерческого заказа (при переходе заказа от одного этапа к другому, либо между повторными вызовами этапа)</xs:documentation></xs:annotation></xs:attribute>
+        <xs:attribute name="isInheritable" type="xs:string" default="false"><xs:annotation><xs:documentation>Признак наследования значения атрибута дочерними компонентами заказа по отношению oredrItemParentId</xs:documentation></xs:annotation></xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="OrderItemResult"><xs:annotation><xs:documentation>Результат выполнения действия над компонентом заказа</xs:documentation></xs:annotation>
+        <xs:all>
+            <xs:element minOccurs="0" maxOccurs="1" name="orderItemResultCode" type="xs:string"><xs:annotation><xs:documentation>Код результата обработки компонента заказа</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="orderItemResultText" type="xs:string"><xs:annotation><xs:documentation>Текстовое описание результата обработки компонента заказ</xs:documentation></xs:annotation>            </xs:element>
+        </xs:all>
+    </xs:complexType>
+    <xs:complexType name="OrderItemSpecification"><xs:annotation><xs:documentation>Спецификация компонента услуги</xs:documentation></xs:annotation>
+        <xs:sequence>
+            <xs:element minOccurs="1" maxOccurs="1" name="catalogId" type="xs:string"><xs:annotation><xs:documentation>идентификатор каталога, по которому указывается идентификатор спецификации</xs:documentation></xs:annotation></xs:element>
+            <xs:choice>
+                <xs:element minOccurs="0" maxOccurs="1" name="specId" type="xs:string"><xs:annotation><xs:documentation>Спецификация сервиса общая для ПАО Ростелеком</xs:documentation></xs:annotation></xs:element>
+                <xs:element minOccurs="0" maxOccurs="1" name="internalSpecId" type="xs:string"><xs:annotation><xs:documentation>backward compatibility для использования в РФ до введения общего каталога для ПАО Ростелеком (specId) – уникальная ссылка на спецификацию сервиса, определяема системой Fulfillment</xs:documentation></xs:annotation></xs:element>
+                <xs:element minOccurs="0" maxOccurs="1" name="externalSpecId" type="xs:string"><xs:annotation><xs:documentation>backward compatibility до проработки общего каталога для ПАО Ростелеком – ссылка на спецификацию сервиса в системе-источнике заказа</xs:documentation></xs:annotation></xs:element>
+            </xs:choice>
+            <xs:element minOccurs="0" maxOccurs="1" name="specVersion" type="xs:string"><xs:annotation><xs:documentation>Версия спецификации</xs:documentation></xs:annotation></xs:element>
+            <xs:element minOccurs="0" maxOccurs="1" name="specName" type="xs:string"><xs:annotation><xs:documentation>Текстовое описание</xs:documentation></xs:annotation></xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="Fault" type="tns:tFault"><xs:annotation><xs:documentation>1.09 Общее описание ошибки</xs:documentation></xs:annotation></xs:element>
+    <xs:complexType name="tFault"><xs:annotation><xs:documentation>Общее описание ошибки</xs:documentation></xs:annotation>
+        <xs:sequence>
+            <xs:element name="ResultCode" type="xs:integer"><xs:annotation><xs:documentation>Код ошибки</xs:documentation></xs:annotation></xs:element>
+            <xs:element name="Message" type="xs:string"><xs:annotation><xs:documentation>Описание ошибки</xs:documentation></xs:annotation></xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType abstract="true" name="RTAPIRequest"><xs:annotation><xs:documentation>Абстрактный базовый тип для структуры запроса</xs:documentation></xs:annotation>
+      <xs:sequence>
+        <xs:element name="originator" type="xs:string"/>
+        <xs:element name="receiver" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+ 
+    <xs:complexType abstract="true" name="RTAPIResponse"><xs:annotation><xs:documentation>Абстрактный базовый тип для структуры ответа на запрос</xs:documentation></xs:annotation>
+      <xs:sequence>
+        <xs:element name="originator" type="xs:string"/>
+        <xs:element name="receiver" type="xs:string"/>
+        <xs:element name="orderResult" type="tns:OrderResult"/>
+      </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0"
+   targetNamespace="http://soa.comptel.com/2011/02/instantlink"
+   xmlns:tns="http://soa.comptel.com/2011/02/instantlink"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="NeType" type="tns:NonEmptyString" />
+	<xs:element name="OrderNo" type="tns:NonEmptyString" />
+	<xs:element name="Priority" type="tns:OneToTen" />
+	<xs:element name="ReqUser" type="tns:NonEmptyString" />
+	<xs:element name="ReqStartTime" type="xs:dateTime" />
+	<xs:element name="MaxReqTime" type="tns:MaxReqTime" />
+	<xs:element name="RetransmissionFlag" type="xs:boolean" />
+	<xs:element name="RetransmissionKey" type="tns:NonEmptyString" />
+	<xs:element name="BypassLock" type="xs:boolean"/>
+	<xs:element name="AddNotificationsToResponse" type="xs:boolean" />
+	<xs:element name="NotificationMsgLevel" type="tns:ZeroToNine" />
+
+	<xs:element name="RequestId" type="xs:long" />
+	<xs:element name="Status" type="tns:ZeroToTen" />
+	<xs:element name="StatusMessage" type="xs:string" />
+	<xs:element name="StatusMessageId" type="xs:string" />
+	<xs:element name="ReceivedDate" type="xs:dateTime" />
+	<xs:element name="FinishedDate" type="xs:dateTime" />
+	<xs:element name="Level" type="tns:ZeroToNine" />
+
+	<xs:element name="InstantLinkAvailabilityInfo" type="tns:InstantLinkAvailabilityInfo" />
+	<xs:element name="Response" type="tns:Response" />
+	<xs:element name="Notification" type="tns:Notification" />
+
+	<xs:simpleType name="NonEmptyString">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="MaxReqTime">
+		<xs:simpleContent>
+			<xs:extension base="xs:int">
+				<xs:attribute name="unit" default="minutes">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="minutes" />
+							<xs:enumeration value="seconds" />
+						</xs:restriction>
+					</xs:simpleType>
+      				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:simpleType name="ZeroToNine">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="0" />
+			<xs:maxInclusive value="9" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="ZeroToTen">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="0" />
+			<xs:maxInclusive value="10" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="OneToTen">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="1" />
+			<xs:maxInclusive value="10" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="Parameter">
+		<xs:annotation>
+			<xs:documentation>Parameter object describes a simple name-value pair</xs:documentation>
+                        
+		</xs:annotation>
+	
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="value" type="xs:string" />
+                <xs:attribute name="tags" type="xs:string" use="optional" default="">
+                    <xs:annotation>
+                        <xs:documentation>Optional tag or tags attached to parameter. This is only applicable for parameters that are stored as order parameters. Defaults to empty</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="orderParam" type="xs:boolean" use="optional" default="false">
+                     <xs:annotation>
+                        <xs:documentation>Optional attribute to mark parameter to be an order parameter. Defaults to false</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="InstantLinkRequest" abstract="true">
+		<xs:annotation>
+			<xs:documentation>InstantLinkRequest is an abstract generic type of a request message to be sent to InstantLink. All the concrete request messages (CreateRequest, DeleteRequest, DisplayRequest, Modifyrequest) are derived from this type.</xs:documentation>
+		</xs:annotation>
+
+		<xs:sequence>
+			<xs:element name="RequestHeader" type="tns:RequestHeader">
+				<xs:annotation>
+					<xs:documentation>RequestHeader contains parameters to control the request processing</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			
+			<xs:element name="RequestParameters" >
+				<xs:annotation>
+					<xs:documentation>RequestParameters contains the actual parameters to be used in the request processing</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Parameter" type="tns:Parameter" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="DeleteRequest">
+		<xs:annotation>
+			<xs:documentation>DeleteRequest is a request type that is used to delete service(s) from the network</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="tns:InstantLinkRequest"/>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="DisplayRequest">
+		<xs:annotation>
+			<xs:documentation>DisplayRequest is a request type that is used to fetch service information from the network</xs:documentation>
+		</xs:annotation>
+		
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="tns:InstantLinkRequest" />
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="CreateRequest">
+		<xs:annotation>
+			<xs:documentation>CreateRequest is a request type that is used to create (activate) service(s) to the network</xs:documentation>
+		</xs:annotation>
+
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="tns:InstantLinkRequest" />
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="ModifyRequest">
+		<xs:annotation>
+			<xs:documentation>ModifyRequest is a request type that is used to modify already activated service(s) in the network</xs:documentation>
+		</xs:annotation>
+			
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="tns:InstantLinkRequest" />
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="RequestHeader">
+		<xs:annotation>
+			<xs:documentation>RequestHeader contains parameters to control the request processing</xs:documentation>
+		</xs:annotation>
+		
+		<xs:sequence>
+			<xs:element ref="tns:NeType">
+				<xs:annotation>
+					<xs:documentation>Network element type</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element ref="tns:OrderNo" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The OSS/BSS identifier of the request</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element ref="tns:Priority" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Priority indicator: 1 (high) - 10 (low)</xs:documentation>
+				</xs:annotation>
+			</xs:element>			
+
+			<xs:element ref="tns:ReqUser" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of the OSS/BSS user that created the request</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element ref="tns:ReqStartTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Desired start time of a timed request</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element ref="tns:MaxReqTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The maximum time allowed for a request to be executed. The time is given in minutes or in seconds depending on the InstantLink configuration</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			
+			<xs:element ref="tns:RetransmissionFlag" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Retransmission flag is used to inform InstantLink that the OSS/BSS may have transmitted the message previously. 0 = not transmitted previously, 1 = transmitted previously</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			
+			<xs:element ref="tns:RetransmissionKey" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The unique identifier of a request in the OSS/BSS that is set to check for duplicate requests in InstantLink</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			
+			<xs:element ref="tns:BypassLock" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies whether request locking is bypassed. true = Request locking is bypassed, false = Request locking is used as normally</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			
+			<xs:element ref="tns:AddNotificationsToResponse" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Specifies whether to include all the raised request processing notifications in the final response message. Notifications may only be generated from asynchronous requests</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			
+			<xs:element ref="tns:NotificationMsgLevel" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Selects the notification level threshold for this request. This overrides the value set in the InstantLink configuration. If this parameter is omitted, the value configured in InstantLink is used. 0 = no notifications are created for this request, 3 = Create only BST notifications, 4 = Create BST notifications and NEI phase messages, 5 = Create BST, NEI and system notifications, 9 = Create all possible notifications</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="InstantLinkAvailabilityInfo">
+		<xs:annotation>
+			<xs:documentation>InstantLinkAvailabilityInfo contains information about the current status of InstantLink</xs:documentation>
+		</xs:annotation>
+
+		<xs:sequence>
+			<xs:element name="InstantLinkInstance" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>InstantLink instance identifier.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			
+			<xs:element name="RunningStatus" type="tns:AvailInfoStatus">
+				<xs:annotation>
+					<xs:documentation>The current status of InstantLink. One of: Starting, Running, Stopping, Stopped, Not reachable, No response, Unknown</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			
+			<xs:element name="Uptime" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>The time InstantLink instance has been running in milliseconds</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="AvailInfoStatus">
+		<xs:annotation>
+			<xs:documentation>AvailInfoStatus is an enumeration of the possible InstantLink statuses</xs:documentation>
+		</xs:annotation>
+	
+		<xs:restriction base="xs:string">		
+			<xs:enumeration value="Starting" />
+			<xs:enumeration value="Running" />
+			<xs:enumeration value="Stopping"  />
+			<xs:enumeration value="Stopped" />
+			<xs:enumeration value="Not reachable" />
+			<xs:enumeration value="No response" />
+			<xs:enumeration value="Unknown" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="Response">
+		<xs:annotation>
+			<xs:documentation>Response is a generic message that is used as an acknowledgement message to asynchronous messages and as a final request response to synchronous or asynchronous messages.</xs:documentation>
+		</xs:annotation>
+
+		<xs:sequence>
+			<xs:element name="ResponseHeader" type="tns:ResponseHeader">
+				<xs:annotation>
+					<xs:documentation>ResponseHeader identifies the response to a certain request</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			
+			<xs:element name="ResponseParameters" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>ResponseParameters contains an arbitrary list of response parameters regarding the sent request</xs:documentation>
+				</xs:annotation>
+				
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Parameter" type="tns:Parameter" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="RequestParameters" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>RequestParameters contains the original request parameters to which this response relates to</xs:documentation>
+				</xs:annotation>
+				
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Parameter" type="tns:Parameter" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="Notifications" minOccurs="0" >
+				<xs:annotation>
+					<xs:documentation>Notifications element contains all the produced notifications related to the request processing</xs:documentation>
+				</xs:annotation>
+
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Notification" type="tns:Notification" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="ResponseHeader">
+		<xs:annotation>
+			<xs:documentation>ResponseHeader identifies the response to a certain request. It also contains status information of the processed request.</xs:documentation>
+		</xs:annotation>
+		
+		<xs:sequence>
+			<xs:element ref="tns:RequestId">
+				<xs:annotation>
+					<xs:documentation>Unique request Id given by InstantLink</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			
+			<xs:element ref="tns:Status">
+				<xs:annotation>
+					<xs:documentation>Request status: 0 = request succesfully received (but not yet executed), 1 = request was not delivered to InstantLink, resend is needed, 2 = request was corrupted and not accepted, 3 = user was not authenticated correctly, request is not accepted, 6 = request was cancelled, 7 = request execution was partly failed, 8 = request execution was failed, 9 = request was executed succesfully, 10 = request was rejected during processing inside IL</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element ref="tns:OrderNo" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The OSS/BSS identifier of the request</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element ref="tns:StatusMessage" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Status message related to the request. If the request is failed, this is the corresponding error message.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element ref="tns:StatusMessageId" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Id of the status message</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element ref="tns:Priority" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Priority indicator: 1 (high) - 10 (low)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element ref="tns:ReqUser" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Name of the OSS/BSS user that created the request</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element ref="tns:ReceivedDate" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The date when request was received by InstantLink</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			
+			<xs:element ref="tns:FinishedDate" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The date when request execution was finished in InstantLink</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Notification">
+		<xs:annotation>
+			<xs:documentation>Notification is an intermediate message object that InstantLink may send during request processing to response service. Notifications may be produced by Business Service Tool, Network Element Interface or InstantLink internally.</xs:documentation>
+		</xs:annotation>
+
+		<xs:sequence>
+			<xs:element ref="tns:OrderNo">
+				<xs:annotation>
+					<xs:documentation>The OSS/BSS identifier of the request</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element ref="tns:RequestId">
+				<xs:annotation>
+					<xs:documentation>Unique request Id given by InstantLink</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element ref="tns:Level">
+				<xs:annotation>
+					<xs:documentation>The notification level of this notification. 3 = BST notification, 4 = NEI phase message, 5 and above = System message</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+
+			<xs:element name="TimeStamp" type="xs:dateTime">
+				<xs:annotation>
+					<xs:documentation>The time this notification was created</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			
+			<xs:element name="MessageId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>An 8 character ID for the message</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			
+			<xs:element name="Message" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Free format text describing the notification.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+    <xs:simpleType name="ResponseAcknowledgement">
+      <xs:annotation>
+         <xs:documentation>
+            The response must be acknowledged with one of the following status codes:
+
+               ACK(0): The response is positively acknowledged.
+               RESEND(1): The response should be resent at a later time.
+               NACK(2): The response is negatively acknowledged. The response will not be resent.              
+         </xs:documentation>
+      </xs:annotation>
+        <xs:restriction base="xs:string">
+         <xs:enumeration value="0"/>
+         <xs:enumeration value="1"/>
+         <xs:enumeration value="2"/>         
+        </xs:restriction>
+    </xs:simpleType>
+
+   <xs:element name="ResponseAcknowledgement" type="tns:ResponseAcknowledgement"/>
+      
+   <xs:element name="HandleNotificationResponse">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation>HandleNotificationResponse is an empty response message that is returned from the response service upon receiving a Notification message</xs:documentation>
+            </xs:annotation>
+        </xs:complexType>
+   </xs:element>
+   
+</xs:schema>

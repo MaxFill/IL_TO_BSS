@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:attr="http://oms.rt.ru/" targetNamespace="http://oms.rt.ru/" version="1.02">
+	<xs:include schemaLocation="RTAPI_v01.xsd"/>
+	<xs:complexType name="EquipmentInfo">
+		<xs:all>
+			<xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="typeName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="category" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Справочник категорий оборудования. Пример значений см. attr:EquipmentCategory</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="status" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="centralOfficeId" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="availableCapacity" type="xs:long" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="extraCapacity" type="xs:long" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="hasProjectFiberLink" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="commissioningDate" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="resolution" type="attr:CapabilityResolution" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>Справочник резолюций ПТВ оборудования. Пример значений см. attr:CapabilityResolution</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="attributes" type="attr:Attributes" minOccurs="0"/>
+		</xs:all>
+	</xs:complexType>
+	<xs:simpleType name="EquipmentCategory">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OPTICAL_MUFF"/>
+			<xs:enumeration value="OPTICAL_BOX"/>
+			<xs:enumeration value="OPTICAL_CROSS"/>
+			<xs:enumeration value="OPTICAL_CASE"/>
+			<xs:enumeration value="SPLITTER"/>
+			<xs:enumeration value="CABLE_RESERVE"/>
+			<xs:enumeration value="CABLE_TRANSIT"/>
+			<xs:enumeration value="ACTIVE_EQUIPMENT"/>
+			<xs:enumeration value="KRT"/>
+			<xs:enumeration value="CASE"/>
+			<xs:enumeration value="CROSS"/>
+			<xs:enumeration value="PP"/>
+			<xs:enumeration value="BASE_STATION"/>
+			<xs:enumeration value="RACK"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CapabilityResolution">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="READY"/>
+			<xs:enumeration value="CHECK"/>
+			<xs:enumeration value="UNAVAILABLE"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

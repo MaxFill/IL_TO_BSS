@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- edited with XMLSpy v2017 sp2 (http://www.altova.com) by Евгений Новицкий (РТИ) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:attr="http://oms.rt.ru/" 
+           elementFormDefault="unqualified"
+           targetNamespace="http://oms.rt.ru/" 
+           version="1.02">
+<!-- Для определения собственных структур для динамических атрибутов (attributes с типом any) необходимо 
+либо в данном файле описать необходимые типы, либо включить в данный файл собственные структуры.
+После этого элименты определенных типов можно добавлять в список атрибутов  -->    
+    
+   <xs:include schemaLocation="equipment.xsd" />   
+</xs:schema>

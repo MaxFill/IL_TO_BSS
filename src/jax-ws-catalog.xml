@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/RTFFASYNCAPI_v01.wsdl" uri="wsdl/RTFFASYNCAPI_v01.wsdl"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/RTFFASYNCAPI_v01.xsd" uri="wsdl/RTFFASYNCAPI_v01.xsd"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/RTAPI_v01.xsd" uri="wsdl/RTAPI_v01.xsd"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/InstantLinkWebServices.xsd" uri="wsdl/InstantLinkWebServices.xsd"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/ResponseHandlerService.wsdl" uri="wsdl/ResponseHandlerService.wsdl"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/ResponseHandlerService.xsd" uri="wsdl/ResponseHandlerService.xsd"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/RTFFAPIv19_4/RTFFASYNCAPI_v01.wsdl" uri="wsdl/RTFFASYNCAPI_v01.wsdl"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/RTFFAPIv19_4/RTFFASYNCAPI_v01.xsd" uri="wsdl/RTFFASYNCAPI_v01.xsd"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/RTFFAPIv19_4/RTAPI_v01.xsd" uri="wsdl/RTAPI_v01.xsd"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/RTFFAPIv19_4/attributes.xsd" uri="wsdl/attributes.xsd"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/RTFFAPIv19_4/equipment.xsd" uri="wsdl/equipment.xsd"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/RTFFAPI/RTFFASYNCAPI_v01.wsdl" uri="wsdl/RTFFASYNCAPI_v01.wsdl"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/RTFFAPI/RTFFASYNCAPI_v01.xsd" uri="wsdl/RTFFASYNCAPI_v01.xsd"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/RTFFAPI/RTAPI_v01.xsd" uri="wsdl/RTAPI_v01.xsd"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/RTFFAPI/attributes.xsd" uri="wsdl/attributes.xsd"/>
+    <system systemId="file:/C:/Users/Maksim.Filatov/Desktop/manuals/wsdl/RTFFAPI/equipment.xsd" uri="wsdl/equipment.xsd"/>
+</catalog>
